@@ -36,15 +36,15 @@ target_size = [480 480 3];
 img = resized_input_img(img, target_size);
 
 %% %Load pretrained network and Generate Config
-net, mask_subnet = load_network(dataFolder, model_name);
+[net, mask_subnet] = load_network(dataFolder, model_name);
 
 %% Get network Prediction
 
 %Make prediction
-[boxes,scores,labels,masks] = detectMaskRCNN(net,maskSubnet,img,params);
+[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
 
 %Visualise the Predictions
-overlayedImage = render_mask(img, boxes, labels,masks);
+overlayedImage = render_mask(img, person_boxes, person_labels, person_masks);
 
 
 %% Functions
@@ -55,18 +55,21 @@ function cam = get_camera()
 end
 
 function [net, mask_subnet] = load_network(folder, model)
+    %Define classes. Car is needed as it is pretrained
+    pretrained = load(fullfile(folder, model));
+    net = pretrained.net;
+    mask_subnet = helper.extractMaskNetwork(net);
+end
+
+function [boxes,scores,labels,masks] = predict(net,mask_subnet,img)
     %Input Dimensions
     desired_image_size= [500 500 3];
-    %Define classes. Car is needed as it is pretrained
     classNames = {'person', 'car','background'};
     numClasses = length(classNames)-1;
     %Create Config
     params = createMaskRCNNConfig(desired_image_size, numClasses, classNames);
-    pretrained = load(fullfile(folder, model));
-    net = pretrained.net;
-    maskSubnet = helper.extractMaskNetwork(net);
+    [boxes,scores,labels,masks] = detectMaskRCNN(net,mask_subnet,img,params);
 end
-
 function img = resized_input_img(img, target_size)
     if size(img,1) > size(img,2)
         img = imresize(img, [target_size(1) NaN]);
