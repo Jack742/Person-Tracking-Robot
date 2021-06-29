@@ -17,9 +17,16 @@ model_name = 'maskrcnn_pretrained_person_car.mat';
 
 
 %% Load Image and Resize it
-
 img = imread('imgs/chefs.jpg');
 
+%% Take picture and load it.
+cam = get_camera();
+img = snapshot(cam);
+
+%save image
+file_name = "cam_img";
+%imwrite(img, "Pictures from sides/" + file_name + ".jpg");
+size(img)
 %resize image to required dimensions
 target_size = [700 700 3];
 
@@ -40,14 +47,6 @@ overlayedImage = render_mask(img, boxes, labels,masks);
 
 %% Functions
 function cam = get_camera()
-    %Serial port configuration
-    %This makes sure that the computer USB port speaks the same convention as
-    %the port on the Arduino
-    serialportlist
-    s = serialport("COM3",115200);
-    s.Terminator;
-    configureTerminator(s,"LF");
-
     %Camera preparation
     cameras = webcamlist;
     cam = webcam;
