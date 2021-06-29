@@ -25,10 +25,12 @@ img = snapshot(cam);
 
 %save image
 file_name = "cam_img";
-%imwrite(img, "Pictures from sides/" + file_name + ".jpg");
-size(img)
+imwrite(img, "imgs/" + file_name + ".jpg");
+size(img);
+
+
 %resize image to required dimensions
-target_size = [700 700 3];
+target_size = [480 480 3];
 
 %Resize image to desired dimensions
 img = resized_input_img(img, target_size);
@@ -54,7 +56,7 @@ end
 
 function [net, mask_subnet] = load_network(folder, model)
     %Input Dimensions
-    desired_image_size= [800 800 3];
+    desired_image_size= [500 500 3];
     %Define classes. Car is needed as it is pretrained
     classNames = {'person', 'car','background'};
     numClasses = length(classNames)-1;
