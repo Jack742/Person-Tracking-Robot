@@ -1,3 +1,6 @@
+clear;
+clc;
+
 %% Adapted from https://uk.mathworks.com/help/vision/ug/example-InstanceSegmentationUsingMaskRCNNDeepLearningExample.html
 %% Paths
 dataFolder = 'models/mrcnn';
@@ -22,6 +25,10 @@ img = imread('imgs/chefs.jpg');
 %% Take picture and load it. Comment out to use presaved file
 cam = get_camera();
 img = snapshot(cam);
+
+%connect to serial, check if works
+s = connect_serial();
+Angle_Move(s ,100 ,1);
 
 %save image
 file_name = "cam_img";
@@ -51,7 +58,29 @@ overlayedImage = render_mask(img, boxes, labels,masks);
 function cam = get_camera()
     %Camera preparation
     cameras = webcamlist;
-    cam = webcam;
+    cam = webcam('Lenovo FHD Webcam');
+end
+
+function s = connect_serial()
+    serialportlist
+    s = serialport("COM3",115200);
+    s.Terminator;
+    configureTerminator(s,"LF");
+end
+
+function next_angle = track_person(current_angle, y)
+    %it is y index of pixels in the middle of the picture
+    half_y = 1920/2;
+    if y > half_y + 300
+        Angle_Move(s ,current_angle - 10 ,1);
+        next_angle = current_angle - 10;
+    elseif y < half_y - 300
+        Angle_Move(s ,current_angle + 10 ,1);
+        next_angle = current_angle + 10;
+    else
+        next_angle = current_angle
+    end
+    
 end
 
 function [net, mask_subnet] = load_network(folder, model)
