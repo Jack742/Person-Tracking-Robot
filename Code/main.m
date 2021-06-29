@@ -28,7 +28,7 @@ img = snapshot(cam);
 
 %connect to serial, check if works
 s = connect_serial();
-Angle_Move(s ,100 ,1);
+Angle_Move(s ,0 ,1);
 
 %save image
 file_name = "cam_img";
@@ -73,7 +73,7 @@ while 1
     %%%%% TO BE ADDED  %%%%%
     
     %mAKE ACTUAL TRACKING MOVEMENT
-    current_angle = track_person(current_angle, y)
+    current_angle = track_person(s, current_angle, y)
 end
 
 
@@ -90,7 +90,7 @@ function s = connect_serial()
     configureTerminator(s,"LF");
 end
 
-function next_angle = track_person(current_angle, y)
+function next_angle = track_person(s, current_angle, y)
     %it is y index of pixels in the middle of the picture
     half_y = 1920/2;
     if y > half_y + 300
