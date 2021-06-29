@@ -19,7 +19,7 @@ model_name = 'maskrcnn_pretrained_person_car.mat';
 %% Load Image and Resize it
 img = imread('imgs/chefs.jpg');
 
-%% Take picture and load it.
+%% Take picture and load it. Comment out to use presaved file
 cam = get_camera();
 img = snapshot(cam);
 
