@@ -1,0 +1,11 @@
+%bbox (x,y,h,w)
+ % BBOX_list = []
+% if labels[i] == "person"
+      % Area = bboxes[i][w] * bboxes[i][h]
+      % BBOX_list_And_AREA = [bbox{i], Area]
+        %Dictionary = {i:BBOX_list_And_AREA]}
+       
+        %if Dictionary(key[i++])[2] > Dictionary(key[i][2]) 
+             %Greatest_Area = Dictionary(key[i])
+          %else:
+               %Greatest_Area = Dictionary(key[i])
