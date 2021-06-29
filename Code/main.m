@@ -19,41 +19,26 @@ model_name = 'maskrcnn_pretrained_person_car.mat';
 
 
 
-%% Load Image and Resize it
-img = imread('imgs/chefs.jpg');
-
-%% Take picture and load it. Comment out to use presaved file
+%% initialise camera and serial ports
 cam = get_camera();
-img = snapshot(cam);
 
 %connect to serial, check if works
-s = connect_serial();
-Angle_Move(s ,0 ,1);
+ s = connect_serial();
+ Angle_Move(s ,0 ,1);
 
 %save image
-file_name = "cam_img";
-imwrite(img, "imgs/" + file_name + ".jpg");
-size(img);
+%file_name = "cam_img";
+%imwrite(img, "imgs/" + file_name + ".jpg");
 
 
-%resize image to required dimensions
+
+%% Image size required dimensions
 target_size = [480 480 3];
 
-%Resize image to desired dimensions
-img = resized_input_img(img, target_size);
-
-%% %Load pretrained network and Generate Config
+%% Load pretrained network and Generate Config
 [net, mask_subnet] = load_network(dataFolder, model_name);
 
-%% Get network Prediction
-
-%Make prediction
-[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
-
-%Visualise the Predictions
-overlayedImage = render_mask(img, boxes,labels,masks);
-
-
+%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%dummy face tracking here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -65,18 +50,64 @@ starting_face_angle = 0;
 Angle_Move(s ,starting_face_angle ,8);
 current_angle = starting_face_angle
 
-%%just dummy y for now
-y = 100
-
 while 1
-    %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
-    %%%%% TO BE ADDED  %%%%%
+%     %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
+%     %%%%% TO BE ADDED  %%%%%
+%     
+%     %mAKE ACTUAL TRACKING MOVEMENT
+
+    %% Take Image and resize to desired dimensions
+    img = snapshot(cam);
+    img = resized_input_img(img, target_size);
+    %% Get network Prediction
+    %Make prediction
+    [boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+
+    %bounding box property order: [left, top, width, height]
+    [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks)
+    %get centre_y coord of largest person
+    y = int(largest_box(1) + (largest_box(3)/2))
+
     
-    %mAKE ACTUAL TRACKING MOVEMENT
     current_angle = track_person(s, current_angle, y)
+    %Visualise the Predictions  
+    overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
 end
 
 %% Functions
+
+function [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels, masks)
+    %% Count People and get closest
+    person_boxes =  []
+    person_labels = []
+    person_masks = []
+    %area of 0, negative location to highlight that it is not a valid box
+    largest_box = [-1, -1, 0, 0]
+    
+    if length(labels) > 0    
+        if length(labels) == 1
+            largest_box = boxes;
+            person_boxes = boxes;
+            person_labels = labels;
+            person_masks = masks;
+        else
+            for i = 1:length(labels)
+                size(masks(:,:,i))
+                if labels(i) == "person"
+                    person_boxes = [person_boxes; boxes(i,:)];
+                    person_labels = [person_labels, "person"];
+                    person_masks = cat(3, person_masks, masks(:, :, i));
+                    box_area = boxes(i,3) * boxes(i,4);
+                    if box_area >= (largest_box(3)*largest_box(4))
+                        largest_box = boxes(i, :);
+                    end
+                end
+            end
+        end
+        person_masks = logical(person_masks);
+    end
+end
+
 function cam = get_camera()
     %Camera preparation
     cam = webcam('Lenovo FHD Webcam');
