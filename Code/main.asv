@@ -27,8 +27,8 @@ cam = get_camera();
 img = snapshot(cam);
 
 %connect to serial, check if works
-%s = connect_serial();
-%Angle_Move(s ,100 ,1);
+s = connect_serial();
+Angle_Move(s ,100 ,1);
 
 %save image
 file_name = "cam_img";
@@ -43,15 +43,15 @@ target_size = [480 480 3];
 img = resized_input_img(img, target_size);
 
 %% %Load pretrained network and Generate Config
-[net, mask_subnet] = load_network(dataFolder, model_name);
+net, mask_subnet = load_network(dataFolder, model_name);
 
 %% Get network Prediction
 
 %Make prediction
-[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+[boxes,scores,labels,masks] = detectMaskRCNN(net,maskSubnet,img,params);
 
 %Visualise the Predictions
-overlayedImage = render_mask(img, boxes,labels,masks);
+overlayedImage = render_mask(img, boxes, labels,masks);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -70,9 +70,7 @@ y = 100
 
 while 1
     %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
-    %%%%% TO BE ADDED  %%%%%
     
-    %mAKE ACTUAL TRACKING MOVEMENT
     current_angle = track_person(current_angle, y)
 end
 
@@ -80,6 +78,7 @@ end
 %% Functions
 function cam = get_camera()
     %Camera preparation
+    cameras = webcamlist;
     cam = webcam('Lenovo FHD Webcam');
 end
 
@@ -106,21 +105,18 @@ function next_angle = track_person(current_angle, y)
 end
 
 function [net, mask_subnet] = load_network(folder, model)
-    %Define classes. Car is needed as it is pretrained
-    pretrained = load(fullfile(folder, model));
-    net = pretrained.net;
-    mask_subnet = helper.extractMaskNetwork(net);
-end
-
-function [boxes,scores,labels,masks] = predict(net,mask_subnet,img)
     %Input Dimensions
     desired_image_size= [500 500 3];
+    %Define classes. Car is needed as it is pretrained
     classNames = {'person', 'car','background'};
     numClasses = length(classNames)-1;
     %Create Config
     params = createMaskRCNNConfig(desired_image_size, numClasses, classNames);
-    [boxes,scores,labels,masks] = detectMaskRCNN(net,mask_subnet,img,params);
+    pretrained = load(fullfile(folder, model));
+    net = pretrained.net;
+    maskSubnet = helper.extractMaskNetwork(net);
 end
+
 function img = resized_input_img(img, target_size)
     if size(img,1) > size(img,2)
         img = imresize(img, [target_size(1) NaN]);
