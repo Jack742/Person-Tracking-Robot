@@ -27,8 +27,8 @@ cam = get_camera();
 img = snapshot(cam);
 
 %connect to serial, check if works
-%s = connect_serial();
-%Angle_Move(s ,100 ,1);
+s = connect_serial();
+Angle_Move(s ,100 ,1);
 
 %save image
 file_name = "cam_img";
