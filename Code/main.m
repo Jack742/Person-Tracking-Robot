@@ -72,6 +72,10 @@ while 1
     %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
     %%%%% TO BE ADDED  %%%%%
     
+    %capture the image
+    % run your hocus pocus
+    % y = 200
+    
     %mAKE ACTUAL TRACKING MOVEMENT
     current_angle = track_person(s, current_angle, y)
 end
