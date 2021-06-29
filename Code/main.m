@@ -27,8 +27,8 @@ cam = get_camera();
 img = snapshot(cam);
 
 %connect to serial, check if works
-s = connect_serial();
-Angle_Move(s ,100 ,1);
+%s = connect_serial();
+%Angle_Move(s ,100 ,1);
 
 %save image
 file_name = "cam_img";
@@ -58,23 +58,23 @@ overlayedImage = render_mask(img, boxes,labels,masks);
 %%dummy face tracking here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%I need to get this angle in degress from the servo start
-starting_face_angle = 0;
-
-%Set servo on closest person
-Angle_Move(s ,starting_face_angle ,8);
-current_angle = starting_face_angle
-
-%%just dummy y for now
-y = 100
-
-while 1
-    %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
-    %%%%% TO BE ADDED  %%%%%
-    
-    %mAKE ACTUAL TRACKING MOVEMENT
-    current_angle = track_person(current_angle, y)
-end
+% %I need to get this angle in degress from the servo start
+% starting_face_angle = 0;
+% 
+% %Set servo on closest person
+% Angle_Move(s ,starting_face_angle ,8);
+% current_angle = starting_face_angle
+% 
+% %%just dummy y for now
+% y = 100
+% 
+% while 1
+%     %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
+%     %%%%% TO BE ADDED  %%%%%
+%     
+%     %mAKE ACTUAL TRACKING MOVEMENT
+%     current_angle = track_person(current_angle, y)
+% end
 
 
 %% Functions
