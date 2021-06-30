@@ -41,46 +41,17 @@ target_size = [480 480 3];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Look Around %%%%%%%%%%%%%%%%
 
-Angle_Move(s ,0 ,7);
+Angle_Move(s ,0 ,3);
 img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "0";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+figure;
+imshow(img)
 
-
-Angle_Move(s ,90 ,7);
+Angle_Move(s ,-10 ,10);
 img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "90";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-Angle_Move(s ,180 ,7);
-img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "180";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-Angle_Move(s ,270 ,7);
-img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "270";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-%%%%% JACK's hocus pokus %%%%%%
-%need biggest boxes y and at which picture it is
+figure;
+imshow(img)
 
 
-
-
-%Closes person angle is :
 
 
 
@@ -124,7 +95,7 @@ while 1
     [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
     %get centre_y coord of largest person
     
-    y = largest_box(1) + (largest_box(3)/2);
+    y = largest_box(1) + (largest_box(3)/2)
     if length(person_boxes) > 0
         %disp("Tracking Person")
         current_angle = track_person(s, current_angle, y);
@@ -184,7 +155,7 @@ function next_angle = track_person(s, current_angle, y)
     %it is y index of pixels in the middle of the picture
     half_y = 480/2;
     speed = 10;
-    centre_bounds = 20;
+    centre_bounds = 80;
     if y > half_y + centre_bounds
         Angle_Move(s ,current_angle + speed ,1);
         next_angle = current_angle + speed;
@@ -227,7 +198,6 @@ function overlayedImage = render_mask(img, boxes, labels, masks)
     else
         overlayedImage = insertObjectMask(img,masks);
     end
-    figure
     imshow(overlayedImage);
     showShape("rectangle",gather(boxes),"Label",labels,"LineColor",'r')
 end
