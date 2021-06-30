@@ -76,7 +76,7 @@ while 1
     [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
     %get centre_y coord of largest person
     
-    y = largest_box(1) + (largest_box(3)/2)
+    y = largest_box(1) + (largest_box(3)/2);
     if length(person_boxes) > 0
         %disp("Tracking Person")
         current_angle = track_person(s, current_angle, y);
@@ -136,7 +136,7 @@ function next_angle = track_person(s, current_angle, y)
     %it is y index of pixels in the middle of the picture
     half_y = 480/2;
     speed = 10;
-    centre_bounds = 80;
+    centre_bounds = 20;
     if y > half_y + centre_bounds
         Angle_Move(s ,current_angle + speed ,1);
         next_angle = current_angle + speed;
@@ -179,6 +179,7 @@ function overlayedImage = render_mask(img, boxes, labels, masks)
     else
         overlayedImage = insertObjectMask(img,masks);
     end
+    figure
     imshow(overlayedImage);
     showShape("rectangle",gather(boxes),"Label",labels,"LineColor",'r')
 end
