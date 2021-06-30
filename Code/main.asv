@@ -113,9 +113,10 @@ end
 disp("image number: ")
 img_number
 disp("y val: ")
-y = first_spin_largest_box(1) +  (first_spin_largest_box(3)/2)
+first_spin_largest_box(1) +  (first_spin_largest_box(3)/2)
 
-starting_face_angle = img_number + (y-240)*90/480;
+if pictureName == 
+
 
 %%%%% JACK's hocus pokus %%%%%%
 %need biggest boxes y and at which picture it is
@@ -135,10 +136,10 @@ starting_face_angle = img_number + (y-240)*90/480;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %I need to get this angle in degress from the servo start
-
+starting_face_angle = 0;
 
 %Set servo on closest person
-Angle_Move(s ,starting_face_angle ,12);
+Angle_Move(s ,starting_face_angle ,8);
 current_angle = starting_face_angle
 
 %%%
