@@ -50,41 +50,53 @@ starting_face_angle = 0;
 Angle_Move(s ,starting_face_angle ,8);
 current_angle = starting_face_angle
 
+%%%
+%NEED TO ADD THE FIRST ROTATION AND PERSON COUNTING HERE
+%%%
+
+%do spin
+%if it sees someone, save the image
+
+disp("Starting While Loop")
 while 1
 %     %%%%%%%%% GET NEW FRAME AND UPDATE Y of middle of the box %%%%%%
 %     %%%%% TO BE ADDED  %%%%%
 %     
 %     %mAKE ACTUAL TRACKING MOVEMENT
-
+    
     %% Take Image and resize to desired dimensions
     img = snapshot(cam);
     img = resized_input_img(img, target_size);
     %% Get network Prediction
     %Make prediction
+   % disp("making prediction")
     [boxes, scores, labels, masks] = predict(net, mask_subnet, img);
-
+    %disp("Getting Largest Box")
     %bounding box property order: [left, top, width, height]
     [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
     %get centre_y coord of largest person
-    y = largest_box(1) + (largest_box(3)/2)
-
     
-    current_angle = track_person(s, current_angle, y)
+    y = largest_box(1) + (largest_box(3)/2)
+    if length(person_boxes) > 0
+        %disp("Tracking Person")
+        current_angle = track_person(s, current_angle, y);
+    end
     %Visualise the Predictions  
-    overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
+    %overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
 end
 
 %% Functions
 
 function [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels, masks)
     %% Count People and get closest
-    person_boxes =  []
-    person_labels = []
-    person_masks = []
-    %area of 0, negative location to highlight that it is not a valid box
-    largest_box = [-1, -1, 0, 0]
+    person_boxes =  [];
+    person_labels = [];
+    person_masks = [];
+    %area 
+    largest_box = [0, 0, 0, 0];
     
-    if length(labels) > 0    
+    if length(labels) > 0
+        disp("Found Person!")
         if length(labels) == 1
             largest_box = boxes;
             person_boxes = boxes;
@@ -123,14 +135,16 @@ end
 function next_angle = track_person(s, current_angle, y)
     %it is y index of pixels in the middle of the picture
     half_y = 480/2;
-    if y > half_y + 50
-        Angle_Move(s ,current_angle + 10 ,1);
-        next_angle = current_angle + 10;
-    elseif y < half_y - 50
-        Angle_Move(s ,current_angle - 10 ,1);
-        next_angle = current_angle - 10;
+    speed = 10;
+    centre_bounds = 80;
+    if y > half_y + centre_bounds
+        Angle_Move(s ,current_angle + speed ,1);
+        next_angle = current_angle + speed;
+    elseif y < half_y - centre_bounds
+        Angle_Move(s ,current_angle - speed ,1);
+        next_angle = current_angle - speed;
     else
-        next_angle = current_angle
+        next_angle = current_angle;
     end
     
 end
@@ -144,7 +158,7 @@ end
 
 function [boxes,scores,labels,masks] = predict(net,mask_subnet,img)
     %Input Dimensions
-    desired_image_size= [500 500 3];
+    desired_image_size= [800 800 3];
     classNames = {'person', 'car','background'};
     numClasses = length(classNames)-1;
     %Create Config
