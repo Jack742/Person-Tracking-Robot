@@ -41,38 +41,81 @@ target_size = [480 480 3];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Look Around %%%%%%%%%%%%%%%%
 
+first_spin_largest_box = [0,0,0,0];
+img_number = -1;
+largest_area = 0;
+count = 0;
+
 Angle_Move(s ,0 ,7);
 img = snapshot(cam);
 %figure;
 %imshow(img)
 file_name = "0";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+% folderpath = "Pictures/";
+% imwrite(img, folderpath + file_name + ".jpg");
 
+img = resized_input_img(img, target_size);
+[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+[person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
+
+if length(person_labels) > 0
+    [first_spin_largest_box, img_number, largest_area] = get_largest(first_spin_largest_box, largest_box,img_number,largest_area, 0);
+end
 
 Angle_Move(s ,90 ,7);
 img = snapshot(cam);
 %figure;
 %imshow(img)
 file_name = "90";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+% folderpath = "Pictures/";
+% imwrite(img, folderpath + file_name + ".jpg");
+img = resized_input_img(img, target_size);
+[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+[person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
+overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
+if length(person_labels) > 0
+    [first_spin_largest_box, img_number, largest_area] = get_largest(first_spin_largest_box, largest_box,img_number,largest_area, 90);
+end
+
 
 Angle_Move(s ,180 ,7);
 img = snapshot(cam);
 %figure;
 %imshow(img)
 file_name = "180";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+% folderpath = "Pictures/";
+% imwrite(img, folderpath + file_name + ".jpg");
+img = resized_input_img(img, target_size);
+[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+[person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
+overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
+if length(person_labels) > 0
+    [first_spin_largest_box, img_number, largest_area] = get_largest(first_spin_largest_box, largest_box, img_number,largest_area, 180);
+end
+
 
 Angle_Move(s ,270 ,7);
 img = snapshot(cam);
 %figure;
 %imshow(img)
 file_name = "270";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+% folderpath = "Pictures/";
+% imwrite(img, folderpath + file_name + ".jpg");
+
+img = resized_input_img(img, target_size);
+[boxes, scores, labels, masks] = predict(net, mask_subnet, img);
+[person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels,masks);
+overlayedImage = render_mask(img, person_boxes,person_labels,person_masks);
+if length(person_labels) > 0
+    [first_spin_largest_box, img_number, largest_area] = get_largest(first_spin_largest_box,largest_box, img_number,largest_area, 270);
+end
+
+disp("image number: ")
+img_number
+disp("y val: ")
+first_spin_largest_box(1) +  (first_spin_largest_box(3)/2)
+
+
 
 %%%%% JACK's hocus pokus %%%%%%
 %need biggest boxes y and at which picture it is
@@ -125,7 +168,7 @@ while 1
     %get centre_y coord of largest person
     
     y = largest_box(1) + (largest_box(3)/2);
-    if length(person_boxes) > 0
+    if length(person_labels) > 0
         %disp("Tracking Person")
         current_angle = track_person(s, current_angle, y);
     end
@@ -134,6 +177,17 @@ while 1
 end
 
 %% Functions
+function [largest_box, img_number, largest_area] = get_largest(first_spin_largest_box,largest_box, old_img, largest_area, curr_number)
+    img_area = largest_box(3)*largest_box(4);
+    if  img_area > largest_area
+        disp("New Box!")
+        first_spin_largest_box = largest_box;
+        img_number=curr_number;
+        largest_area = img_area;
+    else
+        img_number = old_img;
+    end
+end
 
 function [person_boxes, person_labels, person_masks, largest_box] = get_largest_box(boxes, labels, masks)
     %% Count People and get closest
