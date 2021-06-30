@@ -41,46 +41,17 @@ target_size = [480 480 3];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Look Around %%%%%%%%%%%%%%%%
 
-Angle_Move(s ,0 ,7);
+Angle_Move(s ,0 ,3);
 img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "0";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
+figure;
+imshow(img)
 
-
-Angle_Move(s ,90 ,7);
+Angle_Move(s ,-10 ,10);
 img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "90";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-Angle_Move(s ,180 ,7);
-img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "180";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-Angle_Move(s ,270 ,7);
-img = snapshot(cam);
-%figure;
-%imshow(img)
-file_name = "270";
-folderpath = "Pictures/";
-imwrite(img, folderpath + file_name + ".jpg");
-
-%%%%% JACK's hocus pokus %%%%%%
-%need biggest boxes y and at which picture it is
+figure;
+imshow(img)
 
 
-
-
-%Closes person angle is :
 
 
 
